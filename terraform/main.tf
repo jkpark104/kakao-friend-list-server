@@ -16,7 +16,7 @@ variable "ec2_instance_name" {
   type        = string
 }
 
-resource "aws_instance" "ec2-instance" {
+resource "aws_instance" "ec2_instance" {
   ami                    = "ami-0e6f2b2fa0ca704d0"
   instance_type          = "t2.micro"
   key_name               = "terraform_key_pair"

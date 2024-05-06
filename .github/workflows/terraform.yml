@@ -5,7 +5,8 @@ on: workflow_dispatch
 env:
   AWS_REGION: 'ap-northeast-2'
   WORKING_DIR: './terraform'
-  EC2_INSTANCE_NAME: 'kakao-friend-list-backend'
+  EC2_INSTANCE_NAME: 'kakao-friend-list-server'
+  EC2_KEY_PAIR_NAME: 'terraform_key_pair'
 
 jobs:
   terraform:
@@ -33,6 +34,17 @@ jobs:
         run: |
           INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${{ env.EC2_INSTANCE_NAME }}" --query "Reservations[*].Instances[*].InstanceId" --output text)
           echo "INSTANCE_EXISTS=${INSTANCE_ID}" >> $GITHUB_OUTPUT
+
+      - name: Check EC2 Key Pair Existence
+        id: check_key
+        run: |
+          if aws ec2 describe-key-pairs --key-names "${{ env.EC2_KEY_PAIR_NAME }}" >/dev/null 2>&1; then
+            echo "Key pair exists."
+            echo "KEY_PARI_EXISTS=true" >> $GITHUB_OUTPUT            
+          else
+            echo "Key pair does not exist."            
+            echo "KEY_PARI_EXISTS=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
