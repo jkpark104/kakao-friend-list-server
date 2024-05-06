@@ -1,4 +1,4 @@
-name: 'Terraform Detory'
+name: 'Terraform Detroy'
 
 on: workflow_dispatch
 
@@ -10,7 +10,7 @@ jobs:
   terraform:
     name: 'Terraform'
     runs-on: ubuntu-latest
-    environment: production
+    # environment: production
 
     defaults:
       run:
@@ -48,5 +48,5 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Destory
-        run: terraform destory --target kakao_friend_list_backend
+        run: terraform destroy --target kakao_friend_list_backend
         working-directory: ${{ env.WORKING_DIR }}
