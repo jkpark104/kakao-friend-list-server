@@ -48,5 +48,5 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Destory
-        run: terraform destroy --target kakao_friend_list_backend
+        run: terraform destroy --target aws_instance.kakao_friend_list_backend
         working-directory: ${{ env.WORKING_DIR }}
