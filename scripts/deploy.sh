@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-REPOSITORY=/home/ubuntu/my-nest-app
+REPOSITORY=/home/ec2-user/app
 cd $REPOSITORY
 
 echo "> 실행중인"
