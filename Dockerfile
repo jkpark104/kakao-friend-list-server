@@ -7,8 +7,9 @@ COPY ./tsconfig.build.json /myfolder/
 WORKDIR /myfolder
 RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile --prod
-RUN pnpm build
 
 COPY . /myfolder
+
+RUN pnpm build
 
 CMD pnpm start:prod
