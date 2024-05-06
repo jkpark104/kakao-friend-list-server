@@ -47,6 +47,6 @@ jobs:
         run: terraform plan -destroy -no-color
         working-directory: ${{ env.WORKING_DIR }}
 
-      - name: Terraform Apply
-        run: terraform apply -destroy -auto-approve
+      - name: Terraform Destory
+        run: terraform destory --target kakao_friend_list_backend
         working-directory: ${{ env.WORKING_DIR }}
