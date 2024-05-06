@@ -1,9 +1,7 @@
 name: 'Deploy'
 
-on:
-  push:
-    branches:
-      - main
+on: workflow_dispatch
+
 env:
   AWS_REGION: 'ap-northeast-2'
   WORKING_DIR: './terraform'
@@ -27,7 +25,7 @@ jobs:
 
       - name: Get latest commit ID
         id: commit_id
-        run: echo "::set-output name=COMMIT_ID::$(git rev-parse HEAD)"
+        run: echo "COMMIT_ID=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

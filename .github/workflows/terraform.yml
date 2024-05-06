@@ -27,6 +27,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Check for existing EC2 instance
+        id: check-instance
+        run: |
+          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=kakao-friend-list-server" --query "Reservations[*].Instances[*].InstanceId" --output text)
+          echo "INSTANCE_EXISTS=${INSTANCE_ID}" >> $GITHUB_OUTPUT
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -48,5 +54,6 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Apply
+        if: steps.check-instance.outputs.INSTANCE_EXISTS == ''
         run: terraform apply -auto-approve
         working-directory: ${{ env.WORKING_DIR }}

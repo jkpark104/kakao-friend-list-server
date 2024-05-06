@@ -10,14 +10,13 @@ terraform {
 provider "aws" {
   region = "ap-northeast-2"
 }
-
-resource "aws_instance" "kakao_friend_list_backend" {
+resource "aws_instance" "kakao_friend_list_server" {
   ami                    = "ami-0e6f2b2fa0ca704d0"
   instance_type          = "t2.micro"
   key_name               = "terraform_key_pair"
   vpc_security_group_ids = ["sg-01c189184d271e943"]
 
   tags = {
-    Name = "kakao-friend-list-backend"
+    Name = "kakao-friend-list-server"
   }
 }
