@@ -44,7 +44,7 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Plan
-        run: terraform plan -destory -no-color
+        run: terraform plan -destroy -no-color
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Apply
