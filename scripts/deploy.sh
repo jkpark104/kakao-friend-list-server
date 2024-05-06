@@ -3,6 +3,6 @@
 REPOSITORY=/home/ec2-user/app
 cd $REPOSITORY
 
-echo "> 실행중인"
-docker kill $(docker ps -q)
-docker-compose up -d
+echo "> 실행"
+sudo docker kill $(sudo docker ps -q)
+sudo docker-compose up -d
