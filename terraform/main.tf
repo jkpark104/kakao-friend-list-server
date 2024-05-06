@@ -18,6 +18,6 @@ resource "aws_instance" "kakao_friend_list_backend" {
   vpc_security_group_ids = ["sg-01c189184d271e943"]
 
   tags = {
-    Name = "kakao_friend_list_backend"
+    Name = "kakao-friend-list-backend"
   }
 }
