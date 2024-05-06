@@ -4,6 +4,7 @@ on: workflow_dispatch
 
 env:
   AWS_REGION: 'ap-northeast-2'
+  WORKING_DIR: './terraform'
 
 jobs:
   terraform:
@@ -31,16 +32,21 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Format
         run: terraform fmt -check
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Validate
         if: success() || failure()
         run: terraform validate -no-color
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Plan
         run: terraform plan -no-color
+        working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR }}
