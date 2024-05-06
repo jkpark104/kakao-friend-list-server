@@ -5,4 +5,4 @@ cd $REPOSITORY
 
 echo "> 실행"
 
-sudo docker-compose up -d
+docker-compose up -d
