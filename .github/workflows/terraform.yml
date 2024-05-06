@@ -51,10 +51,11 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Plan
-        run: terraform plan -no-color
+        if: steps.check-instance.outputs.INSTANCE_EXISTS == ''
+        run: terraform plan -no-color -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}
 
       - name: Terraform Apply
         if: steps.check-instance.outputs.INSTANCE_EXISTS == ''
-        run: terraform apply -auto-approve -var "ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}"
+        run: terraform apply -auto-approve -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}
