@@ -4,9 +4,9 @@
 
 export const myProfile = {
   uri: 'https://png.pngtree.com/thumb_back/fh260/back_pic/03/54/06/62579986dba62df.jpg',
-  name: '지은',
+  name: '준규',
   introduction: 'inspiring day',
-};
+}
 
 export const friendProfiles = [
   {
@@ -74,4 +74,4 @@ export const friendProfiles = [
     name: '성지현',
     introduction: '~off~',
   },
-];
+]
