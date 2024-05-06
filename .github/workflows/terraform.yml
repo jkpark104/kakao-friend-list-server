@@ -5,6 +5,7 @@ on: workflow_dispatch
 env:
   AWS_REGION: 'ap-northeast-2'
   WORKING_DIR: './terraform'
+  EC2_INSTANCE_NAME: 'kakao-friend-list-backend'
 
 jobs:
   terraform:
@@ -30,7 +31,7 @@ jobs:
       - name: Check for existing EC2 instance
         id: check-instance
         run: |
-          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=kakao-friend-list-server" --query "Reservations[*].Instances[*].InstanceId" --output text)
+          INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${{ env.EC2_INSTANCE_NAME }}" --query "Reservations[*].Instances[*].InstanceId" --output text)
           echo "INSTANCE_EXISTS=${INSTANCE_ID}" >> $GITHUB_OUTPUT
 
       - name: Setup Terraform
@@ -55,5 +56,5 @@ jobs:
 
       - name: Terraform Apply
         if: steps.check-instance.outputs.INSTANCE_EXISTS == ''
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve -var "ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}
