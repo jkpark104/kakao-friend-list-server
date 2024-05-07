@@ -8,6 +8,7 @@ env:
   EC2_INSTANCE_NAME: 'kakao-friend-list-server'
   EC2_KEY_PAIR_NAME: 'terraform_key_pair'
   SECURITY_GROUP_NAME: 'my-server-sg-2'
+  SECURITY_GROUP_ID: ''
 
 jobs:
   terraform:
@@ -71,10 +72,9 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}/key_pair
 
       - name: Get Security Group ID
-        id: sg_id
         run: |
           SG_ID=$(aws ec2 describe-security-groups --query "SecurityGroups[?GroupName=='${{ env.SECURITY_GROUP_NAME }}'].GroupId" --output text)
-          echo "SGID=${SGID}" >> $GITHUB_OUTPUT
+          ehco SECURITY_GROUP_ID=$SG_ID >> $GITHUB_OUTPUT
 
       - name: Terraform Init
         run: terraform init
@@ -90,14 +90,21 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
       - name: Terraform Plan
-        if: steps.sg_id.outputs.SGID == ''
+        if: ${{ env.SECURITY_GROUP_ID }} == ''
         run: terraform plan -no-color -var="security_group_name=${{ env.SECURITY_GROUP_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
       - name: Terraform Apply
-        if: steps.sg_id.outputs.SGID == ''
+        if: ${{ env.SECURITY_GROUP_ID }} == ''
         run: terraform apply -auto-approve -var="security_group_name=${{ env.SECURITY_GROUP_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}/security_group
+
+      - name: Get Created Security Group ID
+        if: ${{ env.SECURITY_GROUP_ID }} == ''
+        run: |
+          SG_ID=$(aws ec2 describe-security-groups --query "SecurityGroups[?GroupName=='${{ env.SECURITY_GROUP_NAME }}'].GroupId" --output text)
+          ehco SECURITY_GROUP_ID=$SG_ID >> $GITHUB_OUTPUT
+          ehco "${{ env.SECURITY_GROUP_ID }}"
 
       # - name: Setup Terraform
       #   uses: hashicorp/setup-terraform@v3
