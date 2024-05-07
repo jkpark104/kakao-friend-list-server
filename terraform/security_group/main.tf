@@ -16,10 +16,15 @@ variable "security_group_name" {
   type        = string
 }
 
+variable "security_vpc_id" {
+  description = "The VPC ID to launch the security group in"
+  type        = string
+}
+
 resource "aws_security_group" "security_group" {
   name        = var.security_group_name
-  description = "Allow HTTP and SSH inbound traffic"
-  vpc_id      = "vpc-0cd1ac93f8441226f"
+  description = "Allow inbound traffic on port 22, 80, 443, 8080"
+  vpc_id      = var.security_vpc_id
 }
 
 resource "aws_security_group_rule" "sg_ingress_ssh" {
