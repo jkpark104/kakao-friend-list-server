@@ -83,27 +83,27 @@ jobs:
           echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
 
       - name: Terraform Init
-        if: ${{ env.VPC_ID }} == ''
+        if: env.VPC_ID == ''
         run: terraform init
         working-directory: ${{ env.WORKING_DIR }}/vpc
 
       - name: Terraform Validate
-        if: ${{ env.VPC_ID }} == ''
+        if: env.VPC_ID == ''
         run: terraform validate -no-color
         working-directory: ${{ env.WORKING_DIR }}/vpc
 
       - name: Terraform Plan
-        if: ${{ env.VPC_ID }} == ''
+        if: env.VPC_ID == ''
         run: terraform plan -no-color -var="vpc_tag_name=${{ env.VPC_TAG_NAME }}" -var="subnet_tag_name=${{ env.VPC_SUBNET_TAG_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}/vpc
 
       - name: Terraform Apply
-        if: ${{ env.VPC_ID }} == ''
+        if: env.VPC_ID == ''
         run: terraform apply -auto-approve -var="vpc_tag_name=${{ env.VPC_TAG_NAME }}" -var="subnet_tag_name=${{ env.VPC_SUBNET_TAG_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}/vpc
 
       - name: Get Security VPC ID
-        if: ${{ env.VPC_ID }} == ''
+        if: env.VPC_ID == ''
         run: |
           VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${{ env.VPC_TAG_NAME }}" --query 'Vpcs[0].VpcId' --output text)
           if [ "$VPC_ID" == "None" ]; then
@@ -117,27 +117,27 @@ jobs:
           echo SECURITY_GROUP_ID=$SG_ID >> $GITHUB_ENV
 
       - name: Terraform Init
-        if: ${{ env.SECURITY_GROUP_ID }} == ''
+        if: env.SECURITY_GROUP_ID == ''
         run: terraform init
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
       - name: Terraform Validate
-        if: ${{ env.SECURITY_GROUP_ID }} == ''
+        if: env.SECURITY_GROUP_ID == ''
         run: terraform validate -no-color
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
       - name: Terraform Plan
-        if: ${{ env.SECURITY_GROUP_ID }} == ''
+        if: env.SECURITY_GROUP_ID == ''
         run: terraform plan -no-color -var="security_group_name=${{ env.SECURITY_GROUP_NAME }}" -var="security_vpc_id=${{ env.VPC_ID }}"
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
       - name: Terraform Apply
-        if: ${{ env.SECURITY_GROUP_ID }} == ''
+        if: env.SECURITY_GROUP_ID == ''
         run: terraform apply -auto-approve -var="security_group_name=${{ env.SECURITY_GROUP_NAME }}" -var="security_vpc_id=${{ env.VPC_ID }}"
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
       - name: Get Created Security Group ID
-        if: ${{ env.SECURITY_GROUP_ID }} == ''
+        if: env.SECURITY_GROUP_ID == ''
         run: |
           SG_ID=$(aws ec2 describe-security-groups --query "SecurityGroups[?GroupName=='${{ env.SECURITY_GROUP_NAME }}'].GroupId" --output text)
           echo SECURITY_GROUP_ID=$SG_ID >> $GITHUB_ENV
