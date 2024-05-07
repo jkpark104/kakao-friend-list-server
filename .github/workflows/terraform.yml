@@ -1,6 +1,9 @@
 name: 'Terraform'
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - main
 
 env:
   AWS_REGION: 'ap-northeast-2'
@@ -131,12 +134,12 @@ jobs:
 
       - name: Terraform Plan
         if: ${{ env.SECURITY_GROUP_ID }} == ''
-        run: terraform plan -no-color -var="security_group_name=${{ env.SECURITY_GROUP_NAME }}" -var="vpc_id=${{ env.VPC_ID }}"
+        run: terraform plan -no-color -var="security_group_name=${{ env.SECURITY_GROUP_NAME }}" -var="security_vpc_id=${{ env.VPC_ID }}"
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
       - name: Terraform Apply
         if: ${{ env.SECURITY_GROUP_ID }} == ''
-        run: terraform apply -auto-approve -var="security_group_name=${{ env.SECURITY_GROUP_NAME }}" -var="vpc_id=${{ env.VPC_ID }}"
+        run: terraform apply -auto-approve -var="security_group_name=${{ env.SECURITY_GROUP_NAME }}" -var="security_vpc_id=${{ env.VPC_ID }}"
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
       - name: Get Created Security Group ID
