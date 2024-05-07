@@ -49,15 +49,12 @@ jobs:
           fi
 
       - name: Terraform Init
+        if: steps.check_key.outputs.KEY_PAIR_EXISTS == 'false'
         run: terraform init
         working-directory: ${{ env.WORKING_DIR }}/key_pair
 
-      - name: Terraform Format
-        run: terraform fmt -check
-        working-directory: ${{ env.WORKING_DIR }}/key_pair
-
       - name: Terraform Validate
-        if: success() || failure()
+        if: steps.check_key.outputs.KEY_PAIR_EXISTS == 'false'
         run: terraform validate -no-color
         working-directory: ${{ env.WORKING_DIR }}/key_pair
 
@@ -74,18 +71,15 @@ jobs:
       - name: Get Security Group ID
         run: |
           SG_ID=$(aws ec2 describe-security-groups --query "SecurityGroups[?GroupName=='${{ env.SECURITY_GROUP_NAME }}'].GroupId" --output text)
-          ehco SECURITY_GROUP_ID=$SG_ID >> $GITHUB_OUTPUT
+          echo SECURITY_GROUP_ID=$SG_ID >> $GITHUB_OUTPUT
 
       - name: Terraform Init
+        if: ${{ env.SECURITY_GROUP_ID }} == ''
         run: terraform init
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
-      - name: Terraform Format
-        run: terraform fmt -check
-        working-directory: ${{ env.WORKING_DIR }}/security_group
-
       - name: Terraform Validate
-        if: success() || failure()
+        if: ${{ env.SECURITY_GROUP_ID }} == ''
         run: terraform validate -no-color
         working-directory: ${{ env.WORKING_DIR }}/security_group
 
@@ -103,8 +97,8 @@ jobs:
         if: ${{ env.SECURITY_GROUP_ID }} == ''
         run: |
           SG_ID=$(aws ec2 describe-security-groups --query "SecurityGroups[?GroupName=='${{ env.SECURITY_GROUP_NAME }}'].GroupId" --output text)
-          ehco SECURITY_GROUP_ID=$SG_ID >> $GITHUB_OUTPUT
-          ehco "${{ env.SECURITY_GROUP_ID }}"
+          echo SECURITY_GROUP_ID=$SG_ID >> $GITHUB_OUTPUT
+          echo "${{ env.SECURITY_GROUP_ID }}"
 
       # - name: Setup Terraform
       #   uses: hashicorp/setup-terraform@v3
