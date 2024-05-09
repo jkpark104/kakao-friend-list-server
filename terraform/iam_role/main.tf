@@ -35,7 +35,7 @@ resource "aws_iam_role" "ec2_code_deploy_role" {
 }
 
 resource "aws_iam_instance_profile" "ec2_code_deploy_profile" {
-  name = "${var.role_name}-profile"
+  name = var.role_name
   role = aws_iam_role.ec2_code_deploy_role.name
 }
 
