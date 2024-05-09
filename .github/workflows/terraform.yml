@@ -15,6 +15,7 @@ env:
   VPC_TAG_NAME: 'my-vpc'
   VPC_ID: ''
   VPC_SUBNET_TAG_NAME: 'my-subnet'
+  EC2_I_AM_ROLE_NAME: 'ec2-code-deploy-role'
 
 jobs:
   terraform:
@@ -157,10 +158,10 @@ jobs:
 
       - name: Terraform Plan
         if: steps.check-instance.outputs.INSTANCE_EXISTS == ''
-        run: terraform plan -no-color -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="key_pair_name=${{ env.EC2_KEY_PAIR_NAME }}" -var="security_group_id=${{ env.SECURITY_GROUP_ID }}"
+        run: terraform plan -no-color -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="key_pair_name=${{ env.EC2_KEY_PAIR_NAME }}" -var="security_group_id=${{ env.SECURITY_GROUP_ID }}" -var="i_am_role_name=${{ env.EC2_I_AM_ROLE_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}/ec2
 
       - name: Terraform Apply
         if: steps.check-instance.outputs.INSTANCE_EXISTS == ''
-        run: terraform apply -auto-approve -no-color -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="key_pair_name=${{ env.EC2_KEY_PAIR_NAME }}" -var="security_group_id=${{ env.SECURITY_GROUP_ID }}"
+        run: terraform apply -auto-approve -no-color -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="key_pair_name=${{ env.EC2_KEY_PAIR_NAME }}" -var="security_group_id=${{ env.SECURITY_GROUP_ID }}" -var="i_am_role_name=${{ env.EC2_I_AM_ROLE_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}/ec2

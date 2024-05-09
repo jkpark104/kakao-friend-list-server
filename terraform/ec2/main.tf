@@ -26,11 +26,17 @@ variable "security_group_id" {
   type        = string
 }
 
+variable "i_am_role_name" {
+  description = "The name of the IAM role"
+  type        = string
+}
+
 resource "aws_instance" "ec2_instance" {
   ami                    = "ami-0e6f2b2fa0ca704d0"
   instance_type          = "t2.micro"
   key_name               = var.key_pair_name
   vpc_security_group_ids = [var.security_group_id]
+  iam_instance_profile = var.i_am_role_name
 
   user_data = <<-EOF
               #!/bin/bash
