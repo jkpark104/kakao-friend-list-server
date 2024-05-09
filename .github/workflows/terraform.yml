@@ -230,9 +230,9 @@ jobs:
 
       - name: Terraform Apply for IAM Role
         if: steps.check_code_deploy_iam_role.outputs.IAM_ROLE_EXISTS == 'false'
+        working-directory: ${{ env.WORKING_DIR }}/code_deploy_iam_role
         run: |
           terraform apply -auto-approve -var="role_name=${{ env.CODE_DEPLOY_I_AM_ROLE_NAME }}"
-          working-directory: ${{ env.WORKING_DIR }}/code_deploy_iam_role
           ROLE_DATA=$(aws iam get-role --role-name "${{ env.CODE_DEPLOY_I_AM_ROLE_NAME }}" --query 'Role.Arn' --output text)
           echo "CODE_DEPLOY_I_AM_ROLE_ARN=$ROLE_DATA" >> $GITHUB_ENV
     
