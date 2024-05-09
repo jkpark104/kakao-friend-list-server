@@ -8,7 +8,7 @@ on:
 env:
   AWS_REGION: 'ap-northeast-2'
   WORKING_DIR: './terraform'
-  EC2_INSTANCE_NAME: 'kakao-friend-list-server-2'
+  EC2_INSTANCE_NAME: 'kakao-friend-list-server-3'
   EC2_KEY_PAIR_NAME: 'terraform_key_pair'
   SECURITY_GROUP_NAME: 'my-server-sg'
   SECURITY_GROUP_ID: ''
