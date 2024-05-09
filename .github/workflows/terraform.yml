@@ -258,10 +258,10 @@ jobs:
 
       - name: Terraform Plan for CodeDeploy Application
         if: steps.check_codedeploy_app.outputs.CODEDEPLOY_APP_EXISTS == 'false'
-        run: terraform plan -no-color -var="application_name=${{ env.CODE_DEPLOY_APP_NAME }}" -var="deployment_group_name=${{ env.CODE_DEPLOY_GROUP_NAME }}" -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="service_role_arn=${{ env.CODE_DEPLOY_I_AM_ROLE_ARN }}"
+        run: terraform plan -no-color -var="app_name=${{ env.CODE_DEPLOY_APP_NAME }}" -var="deployment_group_name=${{ env.CODE_DEPLOY_GROUP_NAME }}" -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="service_role_arn=${{ env.CODE_DEPLOY_I_AM_ROLE_ARN }}"
         working-directory: ${{ env.WORKING_DIR }}/codedeploy
 
       - name: Terraform Apply for CodeDeploy Application
         if: steps.check_codedeploy_app.outputs.CODEDEPLOY_APP_EXISTS == 'false'
-        run: terraform apply -auto-approve -var="application_name=${{ env.CODE_DEPLOY_APP_NAME }}" -var="deployment_group_name=${{ env.CODE_DEPLOY_GROUP_NAME }}" -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="service_role_arn=${{ env.CODE_DEPLOY_I_AM_ROLE_ARN }}"
+        run: terraform apply -auto-approve -var="app_name=${{ env.CODE_DEPLOY_APP_NAME }}" -var="deployment_group_name=${{ env.CODE_DEPLOY_GROUP_NAME }}" -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="service_role_arn=${{ env.CODE_DEPLOY_I_AM_ROLE_ARN }}"
         working-directory: ${{ env.WORKING_DIR }}/codedeploy
