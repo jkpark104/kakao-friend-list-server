@@ -8,14 +8,18 @@ on:
 env:
   AWS_REGION: 'ap-northeast-2'
   WORKING_DIR: './terraform'
-  EC2_INSTANCE_NAME: 'kakao-friend-list-server-2'
+  EC2_INSTANCE_NAME: 'kakao-friend-list-server-4'
   EC2_KEY_PAIR_NAME: 'terraform_key_pair'
   SECURITY_GROUP_NAME: 'my-server-sg'
   SECURITY_GROUP_ID: ''
   VPC_TAG_NAME: 'my-vpc'
   VPC_ID: ''
   VPC_SUBNET_TAG_NAME: 'my-subnet'
-  EC2_I_AM_ROLE_NAME: 'ec2-code-deploy-role-2'
+  EC2_I_AM_ROLE_NAME: 'ec2-code-deploy-role-3'
+  CODE_DEPLOY_APP_NAME: 'demo-app-2'
+  CODE_DEPLOY_GROUP_NAME: 'demo-app-deployment-grp-2'
+  CODE_DEPLOY_I_AM_ROLE_NAME: 'code-deploy-role-2'
+  CODE_DEPLOY_I_AM_ROLE_ARN: ''
 
 jobs:
   terraform:
@@ -195,3 +199,68 @@ jobs:
         if: steps.check-instance.outputs.INSTANCE_EXISTS == ''
         run: terraform apply -auto-approve -no-color -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="key_pair_name=${{ env.EC2_KEY_PAIR_NAME }}" -var="security_group_id=${{ env.SECURITY_GROUP_ID }}" -var="i_am_role_name=${{ env.EC2_I_AM_ROLE_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}/ec2
+
+      - name: Check IAM Role Existence for CodeDeploy
+        id: check_code_deploy_iam_role
+        run: |
+          ROLE_DATA=$(aws iam get-role --role-name "${{ env.CODE_DEPLOY_I_AM_ROLE_NAME }}" 2>&1 || echo "not found")
+          if [[ "$ROLE_DATA" == *"not found"* ]]; then
+            echo "IAM_ROLE_EXISTS=false" >> $GITHUB_OUTPUT
+          else
+            IAM_ROLE_ARN=$(echo $ROLE_DATA | jq -r '.Role.Arn')
+            echo "CODE_DEPLOY_I_AM_ROLE_ARN=$IAM_ROLE_ARN" >> $GITHUB_ENV
+            echo "IAM_ROLE_EXISTS=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Terraform Init for IAM Role
+        if: steps.check_code_deploy_iam_role.outputs.IAM_ROLE_EXISTS == 'false'
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR }}/code_deploy_iam_role
+
+      - name: Terraform Validate for IAM Role
+        if: steps.check_code_deploy_iam_role.outputs.IAM_ROLE_EXISTS == 'false'
+        run: terraform validate -no-color
+        working-directory: ${{ env.WORKING_DIR }}/code_deploy_iam_role
+
+      - name: Terraform Plan for IAM Role
+        if: steps.check_code_deploy_iam_role.outputs.IAM_ROLE_EXISTS == 'false'
+        run: terraform plan -no-color -var="role_name=${{ env.CODE_DEPLOY_I_AM_ROLE_NAME }}"
+        working-directory: ${{ env.WORKING_DIR }}/code_deploy_iam_role
+
+      - name: Terraform Apply for IAM Role
+        if: steps.check_code_deploy_iam_role.outputs.IAM_ROLE_EXISTS == 'false'
+        run: |
+          terraform apply -auto-approve -var="role_name=${{ env.CODE_DEPLOY_I_AM_ROLE_NAME }}"
+          working-directory: ${{ env.WORKING_DIR }}/code_deploy_iam_role
+          ROLE_DATA=$(aws iam get-role --role-name "${{ env.CODE_DEPLOY_I_AM_ROLE_NAME }}" --query 'Role.Arn' --output text)
+          echo "CODE_DEPLOY_I_AM_ROLE_ARN=$ROLE_DATA" >> $GITHUB_ENV
+    
+      - name: Check CodeDeploy Application Existence
+        id: check_codedeploy_app
+        run: |
+          APP_EXISTS=$(aws deploy get-application --application-name "${{ env.CODE_DEPLOY_APP_NAME }}" 2>&1 || echo "not found")
+          if [[ "$APP_EXISTS" == *"not found"* ]]; then
+            echo "CODEDEPLOY_APP_EXISTS=false" >> $GITHUB_OUTPUT
+          else
+            echo "CODEDEPLOY_APP_EXISTS=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Terraform Init for CodeDeploy Application
+        if: steps.check_codedeploy_app.outputs.CODEDEPLOY_APP_EXISTS == 'false'
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR }}/codedeploy
+
+      - name: Terraform Validate for CodeDeploy Application
+        if: steps.check_codedeploy_app.outputs.CODEDEPLOY_APP_EXISTS == 'false'
+        run: terraform validate -no-color
+        working-directory: ${{ env.WORKING_DIR }}/codedeploy
+
+      - name: Terraform Plan for CodeDeploy Application
+        if: steps.check_codedeploy_app.outputs.CODEDEPLOY_APP_EXISTS == 'false'
+        run: terraform plan -no-color -var="application_name=${{ env.CODE_DEPLOY_APP_NAME }}" -var="deployment_group_name=${{ env.CODE_DEPLOY_GROUP_NAME }}" -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="service_role_arn=${{ env.CODE_DEPLOY_I_AM_ROLE_ARN }}"
+        working-directory: ${{ env.WORKING_DIR }}/codedeploy
+
+      - name: Terraform Apply for CodeDeploy Application
+        if: steps.check_codedeploy_app.outputs.CODEDEPLOY_APP_EXISTS == 'false'
+        run: terraform apply -auto-approve -var="application_name=${{ env.CODE_DEPLOY_APP_NAME }}" -var="deployment_group_name=${{ env.CODE_DEPLOY_GROUP_NAME }}" -var="ec2_instance_name=${{ env.EC2_INSTANCE_NAME }}" -var="service_role_arn=${{ env.CODE_DEPLOY_I_AM_ROLE_ARN }}"
+        working-directory: ${{ env.WORKING_DIR }}/codedeploy
