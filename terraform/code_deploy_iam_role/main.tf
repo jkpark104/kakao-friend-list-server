@@ -27,7 +27,7 @@ resource "aws_iam_role" "code_deploy_role" {
         Action = "sts:AssumeRole"
         Effect = "Allow"
         Principal = {
-          Service = "ec2.amazonaws.com"
+          Service = "codedeploy.amazonaws.com"
         }
       },
     ]

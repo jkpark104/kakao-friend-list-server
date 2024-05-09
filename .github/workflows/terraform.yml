@@ -16,9 +16,9 @@ env:
   VPC_ID: ''
   VPC_SUBNET_TAG_NAME: 'my-subnet'
   EC2_I_AM_ROLE_NAME: 'ec2-code-deploy-role-3'
-  CODE_DEPLOY_APP_NAME: 'demo-app-2'
-  CODE_DEPLOY_GROUP_NAME: 'demo-app-deployment-grp-2'
-  CODE_DEPLOY_I_AM_ROLE_NAME: 'code-deploy-role-2'
+  CODE_DEPLOY_APP_NAME: 'demo-app-3'
+  CODE_DEPLOY_GROUP_NAME: 'demo-app-deployment-grp-3'
+  CODE_DEPLOY_I_AM_ROLE_NAME: 'code-deploy-role-3'
   CODE_DEPLOY_I_AM_ROLE_ARN: ''
 
 jobs:
