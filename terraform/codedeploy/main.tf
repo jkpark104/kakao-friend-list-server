@@ -42,10 +42,12 @@ resource "aws_codedeploy_deployment_group" "deployment_group" {
   deployment_group_name = var.deployment_group_name
   service_role_arn      = var.service_role_arn
 
-  on_premises_instance_tag_filter {
-    key   = "Name"
-    value = var.ec2_instance_name
-    type  = "KEY_AND_VALUE"
+  ec2_tag_set {
+    ec2_tag_filter {
+      key   = "Name"
+      value = var.ec2_instance_name
+      type  = "KEY_AND_VALUE"
+    }
   }
 
   deployment_style {
