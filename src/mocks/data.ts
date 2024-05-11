@@ -21,7 +21,7 @@ export const friendProfiles = [
   },
   {
     uri: 'https://cdn.pixabay.com/photo/2016/11/29/05/45/astronomy-1867616__480.jpg',
-    name: '한예지',
+    name: '임소형',
     introduction: '인생은 실전이다',
   },
   {
