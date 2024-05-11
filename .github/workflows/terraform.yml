@@ -14,7 +14,6 @@ env:
   SECURITY_GROUP_ID: ''
   VPC_TAG_NAME: 'my-vpc'
   VPC_ID: ''
-  VPC_SUBNET_TAG_NAME: 'my_subnet'
   EC2_I_AM_ROLE_NAME: 'ec2-code-deploy-role'
   CODE_DEPLOY_APP_NAME: 'my-code-deploy-app'
   CODE_DEPLOY_GROUP_NAME: 'my-deployment-grp'
@@ -79,42 +78,47 @@ jobs:
         run: terraform apply -auto-approve -var="key_pair_name=${{ env.EC2_KEY_PAIR_NAME }}"
         working-directory: ${{ env.WORKING_DIR }}/key_pair
 
-      - name: Get Security VPC ID
+      # - name: Get Security VPC ID
+      #   run: |
+      #     VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${{ env.VPC_TAG_NAME }}" --query 'Vpcs[0].VpcId' --output text)
+      #     if [ "$VPC_ID" == "None" ]; then
+      #       VPC_ID=""
+      #     fi
+      #     echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
+
+      # - name: Terraform Init
+      #   if: env.VPC_ID == ''
+      #   run: terraform init
+      #   working-directory: ${{ env.WORKING_DIR }}/vpc
+
+      # - name: Terraform Validate
+      #   if: env.VPC_ID == ''
+      #   run: terraform validate -no-color
+      #   working-directory: ${{ env.WORKING_DIR }}/vpc
+
+      # - name: Terraform Plan
+      #   if: env.VPC_ID == ''
+      #   run: terraform plan -no-color -var="vpc_tag_name=${{ env.VPC_TAG_NAME }}" -var="subnet_tag_name=${{ env.VPC_SUBNET_TAG_NAME }}"
+      #   working-directory: ${{ env.WORKING_DIR }}/vpc
+
+      # - name: Terraform Apply
+      #   if: env.VPC_ID == ''
+      #   run: terraform apply -auto-approve -var="vpc_tag_name=${{ env.VPC_TAG_NAME }}" -var="subnet_tag_name=${{ env.VPC_SUBNET_TAG_NAME }}"
+      #   working-directory: ${{ env.WORKING_DIR }}/vpc
+
+      # - name: Get Security VPC ID
+      #   if: env.VPC_ID == ''
+      #   run: |
+      #     VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${{ env.VPC_TAG_NAME }}" --query 'Vpcs[0].VpcId' --output text)
+      #     if [ "$VPC_ID" == "None" ]; then
+      #       VPC_ID=""
+      #     fi
+      #     echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
+
+      - name: Get Default VPC ID
+        id: get-vpc-id
         run: |
-          VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${{ env.VPC_TAG_NAME }}" --query 'Vpcs[0].VpcId' --output text)
-          if [ "$VPC_ID" == "None" ]; then
-            VPC_ID=""
-          fi
-          echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
-
-      - name: Terraform Init
-        if: env.VPC_ID == ''
-        run: terraform init
-        working-directory: ${{ env.WORKING_DIR }}/vpc
-
-      - name: Terraform Validate
-        if: env.VPC_ID == ''
-        run: terraform validate -no-color
-        working-directory: ${{ env.WORKING_DIR }}/vpc
-
-      - name: Terraform Plan
-        if: env.VPC_ID == ''
-        run: terraform plan -no-color -var="vpc_tag_name=${{ env.VPC_TAG_NAME }}" -var="subnet_tag_name=${{ env.VPC_SUBNET_TAG_NAME }}"
-        working-directory: ${{ env.WORKING_DIR }}/vpc
-
-      - name: Terraform Apply
-        if: env.VPC_ID == ''
-        run: terraform apply -auto-approve -var="vpc_tag_name=${{ env.VPC_TAG_NAME }}" -var="subnet_tag_name=${{ env.VPC_SUBNET_TAG_NAME }}"
-        working-directory: ${{ env.WORKING_DIR }}/vpc
-
-      - name: Get Security VPC ID
-        if: env.VPC_ID == ''
-        run: |
-          VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${{ env.VPC_TAG_NAME }}" --query 'Vpcs[0].VpcId' --output text)
-          if [ "$VPC_ID" == "None" ]; then
-            VPC_ID=""
-          fi
-          echo "VPC_ID=$VPC_ID" >> $GITHUB_ENV
+          echo "VPC_ID=$(aws ec2 describe-vpcs --filters Name=isDefault,Values=true --query Vpcs[].VpcId --output text)" >> $GITHUB_ENV
 
       - name: Get Security Group ID
         run: |
