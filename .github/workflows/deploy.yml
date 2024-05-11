@@ -3,11 +3,10 @@ name: 'Deploy'
 on: workflow_dispatch
 
 env:
-  AWS_REGION: 'ap-northeast-2'
-  WORKING_DIR: './terraform'
-  CODEDEPLOY_APP_NAME: 'demo-app'
-  CODEDEPLOY_DEPLOYMENT_GROUP_NAME: 'demo-app-deployment-grp'
-  REPOSITORY: 'jkpark104/kakao-friend-list-server'
+  AWS_REGION: 'ap-northeast-2'  
+  CODEDEPLOY_APP_NAME: 'kakao-friend-list_server'
+  CODEDEPLOY_DEPLOYMENT_GROUP_NAME: 'my-deployment-grp'
+  REPOSITORY: 'jkpark104/kakao-friend-list_server'
 
 jobs:
   deploy:
