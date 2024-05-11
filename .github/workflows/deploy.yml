@@ -6,7 +6,7 @@ env:
   AWS_REGION: 'ap-northeast-2'  
   CODEDEPLOY_APP_NAME: 'my-code-deploy-app'
   CODEDEPLOY_DEPLOYMENT_GROUP_NAME: 'my-deployment-grp'
-  REPOSITORY: 'jkpark104/kakao-friend-list_server'
+  REPOSITORY: 'jkpark104/kakao-friend-list-server'
 
 jobs:
   deploy:
