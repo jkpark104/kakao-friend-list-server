@@ -37,6 +37,7 @@ resource "aws_instance" "ec2_instance" {
   key_name               = var.key_pair_name
   vpc_security_group_ids = [var.security_group_id]
   iam_instance_profile = var.i_am_role_profile_name
+  associate_public_ip_address = true
 
   user_data = <<-EOF
               #!/bin/bash
